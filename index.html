@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JSON Formatter</title>
+    <style>
+        /* === MATERIAL 3 EXPRESSIVE DARK THEME === */
+        :root {
+            --md-sys-color-background: #1A1C19;
+            --md-sys-color-on-background: #E2E3DD;
+            --md-sys-color-surface: #2A2C29; 
+            --md-sys-color-on-surface: #E2E3DD;
+            --md-sys-color-on-surface-variant: #C2C9BD; 
+            --md-sys-color-primary: #9CD67D; 
+            --md-sys-color-on-primary: #0C3900;
+            --md-sys-color-primary-container: #265108;
+            --md-sys-color-error: #FFB4AB; 
+            --md-sys-color-error-container: #93000A;
+            --md-sys-color-outline: #8C9388;
+            
+            --radius-large: 28px;
+            --radius-medium: 16px;
+            --spacing: 12px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing);
+        }
+
+        /* Main Container */
+        .app-container {
+            background-color: var(--md-sys-color-surface);
+            border-radius: var(--radius-large);
+            padding: 24px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid var(--md-sys-color-outline);
+        }
+
+        h1 { 
+            text-align: center; 
+            font-size: 24px; 
+            font-weight: 700; 
+            margin-top: 0;
+            margin-bottom: 24px; 
+            color: var(--md-sys-color-primary);
+        }
+
+        /* Input Area */
+        textarea {
+            width: 100%;
+            background-color: var(--md-sys-color-background);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--radius-medium);
+            padding: 16px;
+            min-height: 200px;
+            color: var(--md-sys-color-on-background);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px rgba(156, 214, 125, 0.2); /* Matches primary color */
+        }
+
+        /* Action Buttons */
+        .actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn { 
+            border: none; 
+            border-radius: 100px; 
+            font-weight: 600; 
+            font-size: 15px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 12px 24px;
+            flex: 1;
+            min-width: 120px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-primary { 
+            background-color: var(--md-sys-color-primary-container); 
+            color: var(--md-sys-color-primary); 
+        }
+
+        /* Output Area */
+        pre {
+            background-color: var(--md-sys-color-background);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--radius-medium);
+            padding: 16px;
+            margin-top: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        pre:empty {
+            display: none;
+        }
+    </style>
+
+    <!-- Link to the manifest file -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- Register the Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(registration => {
+              console.log('Service Worker registered successfully');
+            })
+            .catch(error => {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
+</head>
+<body>
+    
+    <div class="app-container">
+        <h1>JSON Formatter</h1>
+        
+        <textarea id="jsonInput">
+{"id":1,"name":"Joe","Qualities":["Human","Vertebrate","Male"]}
+        </textarea>
+        
+        <div class="actions-row">
+            <button class="btn btn-primary" onclick="formatJSON()">Format JSON</button>
+        </div>
+
+        <pre id="output"></pre>
+    </div>
+
+    <script>
+        function formatJSON() {
+            const input = document.getElementById("jsonInput").value;
+            const output = document.getElementById("output");
+            try {
+                const obj = JSON.parse(input);
+                output.textContent = JSON.stringify(obj, null, 2);
+                output.style.color = "var(--md-sys-color-on-surface-variant)"; // Reset color on success
+            } catch (e) {
+                output.textContent = "❌ Invalid JSON: " + e.message;
+                output.style.color = "var(--md-sys-color-error)"; // Use theme error color on fail
+            }
+        }
+    </script>
+</body>
+</html>
